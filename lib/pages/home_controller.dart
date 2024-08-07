@@ -20,6 +20,8 @@ extension ExtHome on _HomeState {
         updated_at: formattedDate);
 
     final postsUpdate = await PostService.update(posts);
+
+      Navigator.pop(context);
     setState(() {
       _posts[indx] = postsUpdate;
     });
@@ -32,6 +34,7 @@ extension ExtHome on _HomeState {
       completed: false,
     );
     final newdata = await PostService.create(data);
+      Navigator.pop(context);
     setState(() {
       _posts.add(newdata);
       _titleController.clear();
@@ -39,11 +42,12 @@ extension ExtHome on _HomeState {
     });
   }
 
-  void _deletedata(String index) async {
+  void _deletedata(String id,int index) async {
     //final posts = _posts[index];
-    await PostService.delete(index);
+    
+    await PostService.delete(id);
     setState(() {
-      // _posts.removeAt(index);
+       _posts.removeAt(index);
     });
   }
 

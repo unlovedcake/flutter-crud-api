@@ -177,7 +177,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 InkWell(
                                   child: Icon(Icons.delete),
-                                  onTap: () => _deletedata(data.id.toString()),
+                                  onTap: () => _deletedata(data.id.toString(), index),
                                 ),
                               ],
                             ),

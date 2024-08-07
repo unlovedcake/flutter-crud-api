@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class PostRepository {
+class TodoRepositories {
   static const String baseUrl = 'https://api.nstack.in/v1/todos';
   //'https://jsonplaceholder.typicode.com';
 
   static Future<List<dynamic>> get(String endpoint) async {
     final response = await http.get(Uri.parse('$baseUrl/$endpoint'));
     if (response.statusCode == 200) {
-       print('Posts:'+ (response.body));
       return json.decode(response.body)['items'];
     } else {
       throw Exception('Failed to load data');
