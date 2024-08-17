@@ -1,5 +1,6 @@
 import 'package:crud_api/bloc/todo_bloc.dart';
 import 'package:crud_api/models/todo_model.dart';
+import 'package:crud_api/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +15,9 @@ class _TodoPageState extends State<TodoPage> {
 
     @override
   void initState() {
-    BlocProvider.of<TodoBloc>(context).add(GetTodoEvent());
+    //BlocProvider.of<TodoBloc>(context).add(GetTodoEvent());
+    
+    print('Loaded');
     super.initState();
   }
 
@@ -25,86 +28,34 @@ class _TodoPageState extends State<TodoPage> {
           appBar: AppBar(
             title: Text('Todo'),
           ),
-//           body:BlocConsumer<TodoBloc, TodoState>(
-//   listenWhen: (context, state) {
-//     return state.status == Status.LOADED || state.status == Status.SUCESS;
-//   },
-//   listener: (context, state) {
-//     if (state.status == Status.LOADED) {
-//       // Navigate to next screen
-//       print('OKEY');
-//      // Navigator.of(context).pushNamed('OrderCompletedScreen');
-//     } else if (state.status == Status.LOADED) {
-//        print('OKEYS');
-//      // Analytics.reportRefunded(state.orderId);
-//     }
-//   },
-//   buildWhen: (context, state) {
-//     return state.status == Status.LOADED || state.status == Status.SUCESS;
-//   },
-//   builder: (context, state) {
-//     if (state.status == Status.LOADED || state.status == Status.SUCESS) {
-//  return Column(
-//                   children: [
-//                     Container(
-//                       height: 500,
-//                       child: ListView.builder(
-//                         itemCount: state.todoData!.length,
-//                         itemBuilder: (context, index) {
-//                           final todo = state.todoData![index];
-//                           return ListTile(
-//                             title: Text(todo.title.toString()),
-//                             // leading: Checkbox(
-//                             //   value: todo.completed,
-//                             //   onChanged: (value) {
-//                             //     final updatedTodo = todo.copyWith(completed: value);
-//                             //     _todoBloc.add(UpdateTodo(updatedTodo));
-//                             //   },
-//                             // ),
-//                             trailing: IconButton(
-//                               icon: const Icon(Icons.delete),
-//                               onPressed: () {
-//                                 //_todoBloc.add(DeleteTodo(todo.id));
-//                               },
-//                             ),
-//                           );
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 );
-//     } else if (state.status == Status.LOADING) {
-//       return Container(child: Text('In Progress'));
-//     } else {
-//       return Container(child: Text('No State'));
-//     }
-//   },
-// ),
-          body: BlocListener<TodoBloc, TodoState>(
-        listenWhen: (context, state) {
-          return state.status == Status.LOADED || state.status == Status.SUCESS;
-        },
-        listener: (context, state) {
-           if (state.status == Status.LOADING) {
-           Center(child: Text('Loading'));
-          }
-          else if (state.status == Status.ERROR) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.error.toString()),
-              duration: const Duration(seconds: 3),
-            ));
-          }
-        },
-        child: BlocBuilder<TodoBloc, TodoState>(
-            builder: (context, state) {
-              if (state.status == Status.LOADING) {
-                return const Center(child: Text('Loading,,,'));
-              } else if (state.status == Status.LOADED || state.status == Status.SUCESS) {
-         
-                return Column(
+          body:BlocConsumer<TodoBloc, TodoState>(
+  listenWhen: (context, state) {
+    return state.status == Status.LOADED || state.status == Status.SUCESS;
+  },
+  listener: (context, state) {
+    if (state.status == Status.LOADED) {
+      // Navigate to next screen
+      print(state.todoData);
+     // Navigator.of(context).pushNamed('OrderCompletedScreen');
+    } else if (state.status == Status.LOADED) {
+       print('OKEYS');
+     // Analytics.reportRefunded(state.orderId);
+    }
+  },
+  buildWhen: (context, state) {
+    return state.status == Status.LOADED || state.status == Status.SUCESS;
+  },
+  builder: (context, state) {
+      if (state.status == Status.LOADING) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+    if (state.status == Status.LOADED || state.status == Status.SUCESS) {
+          return Column(
                   children: [
-                    Container(
-                      height: 500,
+                    Expanded(
+                     
                       child: ListView.builder(
                         itemCount: state.todoData!.length,
                         itemBuilder: (context, index) {
@@ -128,22 +79,91 @@ class _TodoPageState extends State<TodoPage> {
                         },
                       ),
                     ),
+
+ 
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: ElevatedButton(onPressed: (){
+                          _showAddTodoDialog(context, state);
+                      }, child: Text('Add Todo')),
+                    )
                   ],
                 );
-              } else {
-                return Container(child: Text('Empty'),);
-              }
-            },
-          )),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _showAddTodoDialog(context);
-            },
-            child: const Icon(Icons.add),
-          ),
+    } else if (state.status == Status.LOADING) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return Container(child: Text('No State'));
+    }
+  },
+),
+        //   body: BlocListener<TodoBloc, TodoState>(
+        // listenWhen: (context, state) {
+        //   return state.status == Status.LOADED || state.status == Status.SUCESS;
+        // },
+        // listener: (context, state) {
+        //    if (state.status == Status.LOADING) {
+        //    Center(child: Text('Loading'));
+        //   }
+        //   else if (state.status == Status.ERROR) {
+        //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //       content: Text(state.error.toString()),
+        //       duration: const Duration(seconds: 3),
+        //     ));
+        //   }
+        // },
+        // child: BlocBuilder<TodoBloc, TodoState>(
+        //     builder: (context, state) {
+        //       if (state.status == Status.LOADING) {
+        //         return const Center(child: Text('Loading,,,'));
+        //       } else if (state.status == Status.LOADED || state.status == Status.SUCESS) {
+         
+        //         return Column(
+        //           children: [
+        //             Container(
+        //               height: 500,
+        //               child: ListView.builder(
+        //                 itemCount: state.todoData!.length,
+        //                 itemBuilder: (context, index) {
+        //                   final todo = state.todoData![index];
+        //                   return ListTile(
+        //                     title: Text(todo.title.toString()),
+        //                     // leading: Checkbox(
+        //                     //   value: todo.completed,
+        //                     //   onChanged: (value) {
+        //                     //     final updatedTodo = todo.copyWith(completed: value);
+        //                     //     _todoBloc.add(UpdateTodo(updatedTodo));
+        //                     //   },
+        //                     // ),
+        //                     trailing: IconButton(
+        //                       icon: const Icon(Icons.delete),
+        //                       onPressed: () {
+        //                         //_todoBloc.add(DeleteTodo(todo.id));
+        //                       },
+        //                     ),
+        //                   );
+        //                 },
+        //               ),
+        //             ),
+
+        //             ElevatedButton(onPressed: (){
+        //                 _showAddTodoDialog(context, state);
+        //             }, child: Text('Add Todo'))
+        //           ],
+        //         );
+        //       } else {
+        //         return Container(child: Text('Empty'),);
+        //       }
+        //     },
+        //   )),
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: () {
+          //     _showAddTodoDialog(context);
+          //   },
+          //   child: const Icon(Icons.add),
+          // ),
         );
   }
-    void _showAddTodoDialog(BuildContext context) {
+    void _showAddTodoDialog(BuildContext context, TodoState state) {
       final _titleController = TextEditingController();
       showDialog(
         context: context,
@@ -162,7 +182,7 @@ class _TodoPageState extends State<TodoPage> {
                 },
               ),
               ElevatedButton(
-                child: const Text('Add'),
+                child:  Text( state.status == Status.LOADING ? "ADding" : 'Add'),
                 onPressed: () {
                   
                   final todo = TodoModel(

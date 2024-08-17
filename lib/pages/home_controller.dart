@@ -1,10 +1,21 @@
 part of 'home.dart';
 
 extension ExtHome on _HomeState {
-  void _loadPosts() async {
-    final posts = await PostService.getPosts();
+
+  
+  void _loadPosts(int page) async {
+           _isLoading = true;
+    final posts = await PostService.getPosts(page);
+    if(posts.isEmpty){
+  isNoMoreData.value = true;
+     print('data: ${posts}');
+     return;
+}
     setState(() {
-      _posts = posts;
+
+       _posts.addAll(posts);
+      _isLoading = false;
+  
     });
   }
 

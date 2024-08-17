@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 class PostRepository {
@@ -8,7 +9,7 @@ class PostRepository {
   static Future<List<dynamic>> get(String endpoint) async {
     final response = await http.get(Uri.parse('$baseUrl/$endpoint'));
     if (response.statusCode == 200) {
-       print('Posts:'+ (response.body));
+       log('Posts:'+ json.decode(response.body)['meta']['has_more_page'].toString());
       return json.decode(response.body)['items'];
     } else {
       throw Exception('Failed to load data');

@@ -7,26 +7,14 @@ import 'package:equatable/equatable.dart';
 import 'package:crud_api/models/todo_model.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-part './todo_event.dart';
-part './todo_state.dart';
+part './home_event.dart';
+part './home_state.dart';
 
-class TodoBloc extends Bloc<TodoEvent, TodoState> {
+class HomeBloc extends Bloc<TodoEvent, TodoState> {
 
    
-  TodoBloc() : super(TodoState.initial()) {
-    on<GetTodoEvent>((event, emit) async {
-      emit(state.copyWith(status: Status.LOADING));
-      try {
-        final data = await TodoRepositories.get('?page=2&limit=10');
-        final todaoData = List<TodoModel>.from(data.map((x) => TodoModel.fromJson(x)));
-        print('HEYS');
-        
-        emit(state.copyWith(
-            todoData: todaoData, status: Status.LOADED));
-      } catch (e) {
-        emit(state.copyWith(error: e.toString(), status: Status.ERROR));
-      }
-    });
+  HomeBloc() : super(TodoState.initial()) {
+  
 
     //  on<AddTodoEvent>((event, emit) async {
 
@@ -64,7 +52,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     listTodoData.insert(0,event.todoData!);
     
     
-        print('Success Add');
+        print('Success');
      emit(state.copyWith(todoData: listTodoData, status: Status.SUCESS));
   }
   

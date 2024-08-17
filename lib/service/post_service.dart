@@ -5,8 +5,9 @@ import '../models/post_model.dart';
 class PostService {
   static const String endpoint = 'posts';
 
-  static Future<List<Post>> getPosts() async {
-    final data = await PostRepository.get('?page=1&limit=10');
+  static Future<List<Post>> getPosts(int page,) async {
+    final data = await PostRepository.get('?page=$page&limit=10');
+  
     return List<Post>.from(data.map((x) => Post.fromJson(x)));
   }
 
