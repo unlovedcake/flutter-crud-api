@@ -4,17 +4,22 @@ extension ExtHome on _HomeState {
 
   
   void _loadPosts(int page) async {
-           _isLoading = true;
+           _isLoading = false;
     final posts = await PostService.getPosts(page);
+
+    
     if(posts.isEmpty){
-  isNoMoreData.value = true;
+      setState(() {
+          isNoMoreData.value = true;
      print('data: ${posts}');
+      });
+
      return;
 }
     setState(() {
 
        _posts.addAll(posts);
-      _isLoading = false;
+      _isLoading = true;
   
     });
   }
@@ -22,13 +27,13 @@ extension ExtHome on _HomeState {
   void _updatedataState(String index, int indx) async {
     DateTime date = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(date);
-    final posts = Post(
+    final posts = Item(
         id: index,
         title: _titleController.text,
         description: _descriptionController.text,
-        completed: true,
-        created_at: " ",
-        updated_at: formattedDate);
+        isCompleted: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now());
 
     final postsUpdate = await PostService.update(posts);
 
@@ -38,19 +43,37 @@ extension ExtHome on _HomeState {
     });
   }
 
-  void _adddata() async {
-    final data = Post(
-      title: _titleController.text,
-      description: _descriptionController.text,
-      completed: false,
-    );
+  
+
+  Future<Item> _adddata() async {
+
+    if (!_canAdd) {
+      throw Exception('Cannot increment while already computing!');
+    }
+
+
+
+      _completer = Completer<Item>();
+
+      final data = Item(
+        id: '123',
+        title: _titleController.text,
+        description: _descriptionController.text,
+        isCompleted: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now());
+    
     final newdata = await PostService.create(data);
       Navigator.pop(context);
     setState(() {
+     
       _posts.add(newdata);
       _titleController.clear();
       _descriptionController.clear();
+       
     });
+
+     return _completer!.future;
   }
 
   void _deletedata(String id,int index) async {

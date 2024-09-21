@@ -56,6 +56,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   void _addTodo(AddTodoEvent event, Emitter<TodoState> emit)async{
 
     emit(state.copyWith(status:  Status.LOADING));
+    
     List<TodoModel> listTodoData= [];
  
     listTodoData.addAll(state.todoData!);

@@ -5,21 +5,21 @@ import '../models/post_model.dart';
 class PostService {
   static const String endpoint = 'posts';
 
-  static Future<List<Post>> getPosts(int page,) async {
+  static Future<List<Item>> getPosts(int page,) async {
     final data = await PostRepository.get('?page=$page&limit=10');
   
-    return List<Post>.from(data.map((x) => Post.fromJson(x)));
+    return List<Item>.from(data.map((x) => Item.fromJson(x)));
   }
 
-  static Future<Post> create(Post post) async {
+  static Future<Item> create(Item post) async {
     final data = await PostRepository.post(post.toJson());
 
-    return Post.fromJson(data);
+    return Item.fromJson(data);
   }
 
-  static Future<Post> update(Post post) async {
+  static Future<Item> update(Item post) async {
     final data = await PostRepository.put(post.id.toString(), post.toJson());
-    return Post.fromJson(data);
+    return Item.fromJson(data);
   }
 
   static Future<void> delete(String id) async {

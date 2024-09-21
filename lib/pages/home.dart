@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crud_api/fade_animate_dialog.dart';
 import 'package:crud_api/models/post_model.dart';
 import 'package:crud_api/service/post_service.dart';
@@ -15,37 +17,41 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Post> _posts = [];
-  List<Post> searchPosts = [];
+  List<Item> _posts = [];
+  List<Item> searchPosts = [];
   final _searchController = TextEditingController();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-    ValueNotifier<bool> isNoMoreData = ValueNotifier(false);
-    
+  ValueNotifier<bool> isNoMoreData = ValueNotifier(false);
 
   int page = 2;
 
+  Completer<Item>? _completer;
+  bool get _canAdd => _completer == null || _completer!.isCompleted;
 
   ScrollController _scrollController = ScrollController();
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-     _loadPosts(page);
+    _loadPosts(page);
 
-     _scrollController.addListener(() {
-      if(!isNoMoreData.value){
- if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !_isLoading) {
-           page++;
-           _loadPosts(page);
-           
+    _scrollController.addListener(() {
+      if (!isNoMoreData.value) {
+        if (_scrollController.position.pixels ==
+                _scrollController.position.maxScrollExtent &&
+            _isLoading) {
+          page++;
+          _loadPosts(page);
+        }
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
       }
-      }
-     
     });
-
   }
 
   @override
@@ -54,8 +60,7 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-
-     void showFadeAlertDialog(BuildContext context) {
+  void showFadeAlertDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -66,38 +71,41 @@ class _HomeState extends State<Home> {
   }
 
   String formatDateTime(String dateTime) {
-  // Parse the date-time string to a DateTime object
-  DateTime parsedDateTime = DateTime.parse(dateTime);
+    // Parse the date-time string to a DateTime object
+    DateTime parsedDateTime = DateTime.parse(dateTime);
 
-  // Format the date to 'MMM dd, yyyy' (e.g., Aug 15, 2024)
-  String formattedDate = DateFormat('MMM dd, yyyy').format(parsedDateTime);
+    // Format the date to 'MMM dd, yyyy' (e.g., Aug 15, 2024)
+    String formattedDate =
+        DateFormat('MMM dd, yyyy - hh:mm a').format(parsedDateTime);
 
-  // Format the time to 'hh:mm a' (e.g., 06:29 am)
-  String formattedTime = DateFormat('hh:mm a').format(parsedDateTime);
-
-  // Combine the formatted date and time
-  return '$formattedDate - $formattedTime';
-}
-
-  
+    return formattedDate;
+  }
 
   @override
   Widget build(BuildContext context) {
-    print('Reload');
+    print('Reload Home');
+    print('May var:' + const String.fromEnvironment('MY_VAR'));
+    print(const String.fromEnvironment('MY_OTHER_VAR'));
     return Scaffold(
       appBar: AppBar(
         title: Text('Posts'),
         actions: [
-           ElevatedButton(
-      child: Text('Show Map'),
-          onPressed: (){
-            Navigator.pushNamed(context, '/googlemap');
+          ElevatedButton(
+              child: Text('Show Map'),
+              onPressed: () {
+                Navigator.pushNamed(context, '/googlemap');
                 //showFadeAlertDialog(context);
-          } 
-        ),
-          ElevatedButton(onPressed: (){Navigator.pushNamed(context, '/settings');}, child: Text('Settings')),
-  ElevatedButton(onPressed: (){Navigator.pushNamed(context, '/todo');}, child: Text('Todo')),
-
+              }),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/settings');
+              },
+              child: Text('Settings')),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/todo');
+              },
+              child: Text('Todo')),
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: InkWell(
@@ -154,6 +162,32 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            Container(
+              alignment: Alignment.bottomCenter,
+              height: 68,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+
+                  enabledBorder:
+                      InputBorder.none, // Removes enabled state border
+                  focusedBorder:
+                      InputBorder.none, // Removes focused state border
+                  labelText: 'Email',
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(strokeAlign: 8),
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -177,28 +211,37 @@ class _HomeState extends State<Home> {
                 : Expanded(
                     child: ListView.builder(
                       controller: _scrollController,
-                      itemCount:  searchPosts.isNotEmpty
+                      itemCount: searchPosts.isNotEmpty
                           ? searchPosts.length
                           : _posts.length,
                       itemBuilder: (BuildContext context, int index) {
-                        searchPosts
-                            .sort((a, b) => a.title!.compareTo(b.title!));
-                        _posts.sort((a, b) => a.title!.compareTo(b.title!));
+                        searchPosts.sort(
+                            (b, a) => a.createdAt!.compareTo(b.createdAt!));
+                        _posts.sort(
+                            (b, a) => a.createdAt!.compareTo(b.createdAt!));
 
                         final data = searchPosts.isNotEmpty
                             ? searchPosts[index]
                             : _posts[index];
 
-                            if (index == _posts.length) {
-                           return _isLoading ? Center(child: CircularProgressIndicator()) : SizedBox.shrink();
-                            }
+                        print('Index: ${index} Posts: ${_posts.length}');
+
+                        if (index == _posts.length - 1) {
+                          return isNoMoreData.value
+                              ? Text('No More Data')
+                              : _isLoading
+                                  ? Center(child: CircularProgressIndicator())
+                                  : SizedBox.shrink();
+                        }
 
                         return Column(
                           children: [
                             Card(
                               child: ListTile(
                                 title: Text(data.title ?? ''),
-                                subtitle: Text(formatDateTime(data.created_at.toString()) ?? ''),
+                                subtitle: Text(
+                                    formatDateTime(data.createdAt.toString()) ??
+                                        ''),
                                 trailing: Column(
                                   children: [
                                     InkWell(
@@ -220,11 +263,15 @@ class _HomeState extends State<Home> {
                                                   ),
                                                 ),
                                                 TextField(
-                                                  controller: _descriptionController
-                                                    ..text = data.description ?? '',
+                                                  controller:
+                                                      _descriptionController
+                                                        ..text =
+                                                            data.description ??
+                                                                '',
                                                   decoration: InputDecoration(
                                                     labelText: 'Description',
-                                                    hintText: 'Enter Description',
+                                                    hintText:
+                                                        'Enter Description',
                                                   ),
                                                 ),
                                               ],
@@ -233,7 +280,8 @@ class _HomeState extends State<Home> {
                                               ElevatedButton(
                                                 onPressed: () {
                                                   _updatedataState(
-                                                      data.id.toString(), index);
+                                                      data.id.toString(),
+                                                      index);
                                                 },
                                                 child: Text('Update'),
                                               ),
@@ -250,19 +298,20 @@ class _HomeState extends State<Home> {
                                     ),
                                     InkWell(
                                       child: Icon(Icons.delete),
-                                      onTap: () => _deletedata(data.id.toString(), index),
+                                      onTap: () => _deletedata(
+                                          data.id.toString(), index),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
 
-                           ValueListenableBuilder<bool>(
-                          valueListenable: isNoMoreData,
-                          builder: (context, value, child) {
-                            return value ? Center(child: Text('No more data')) : SizedBox.shrink();
-                          },
-                        )
+                            //    ValueListenableBuilder<bool>(
+                            //   valueListenable: isNoMoreData,
+                            //   builder: (context, value, child) {
+                            //     return value ? Center(child: Text('No more data')) : SizedBox.shrink();
+                            //   },
+                            // )
                           ],
                         );
                       },
@@ -272,7 +321,6 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-    
   }
 }
 
@@ -288,4 +336,3 @@ class FadeInDialog extends StatelessWidget {
     );
   }
 }
-
