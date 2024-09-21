@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class FadeAlertDialog extends StatefulWidget {
   @override
   _FadeAlertDialogState createState() => _FadeAlertDialogState();
 }
 
-class _FadeAlertDialogState extends State<FadeAlertDialog> with SingleTickerProviderStateMixin {
+class _FadeAlertDialogState extends State<FadeAlertDialog>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
   bool _isVisible = false;
@@ -25,7 +25,8 @@ class _FadeAlertDialogState extends State<FadeAlertDialog> with SingleTickerProv
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _isVisible = true;
-        _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+        _opacityAnimation =
+            Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
         _animationController.forward();
       });
     });
@@ -44,10 +45,9 @@ class _FadeAlertDialogState extends State<FadeAlertDialog> with SingleTickerProv
       duration: Duration(milliseconds: 500),
       child: AlertDialog(
         title: Text('Title'),
-        contentPadding: EdgeInsets.zero,  // Remove default padding
+        contentPadding: EdgeInsets.zero, // Remove default padding
         content: Container(
-    
-  // Set custom width here
+          // Set custom width here
           padding: EdgeInsets.all(10.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -56,7 +56,6 @@ class _FadeAlertDialogState extends State<FadeAlertDialog> with SingleTickerProv
               SizedBox(height: 20),
               TextButton(
                 onPressed: () {
-                   
                   _animationController.reverse().then((_) {
                     Navigator.of(context).pop();
                   });
