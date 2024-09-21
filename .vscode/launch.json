@@ -1,0 +1,18 @@
+{
+	"version": "0.2.0",
+"configurations": [
+   
+	{
+		"name": "Flutter",
+		"request": "launch",
+		"type": "dart",
+        "program": "lib/main.dart",
+		"toolArgs": [
+			"--dart-define",
+			"MY_VAR=MYAPIKEY",
+			"--dart-define",
+			"MY_OTHER_VAR=APIKEY"
+		]
+	}
+]
+}

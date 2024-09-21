@@ -181,7 +181,16 @@ class _TodoPageState extends State<TodoPage> {
                   Navigator.pop(context);
                 },
               ),
-              ElevatedButton(
+
+              BlocBuilder<TodoBloc, TodoState>(
+  buildWhen: (context, state) {
+    return state.status == Status.LOADING;
+  },
+  builder: (context, state) {
+    if (state.status == Status.LOADING) {
+      return Container(child: CircularProgressIndicator());
+    }  else {
+      return  ElevatedButton(
                 child:  Text( state.status == Status.LOADING ? "ADding" : 'Add'),
                 onPressed: () {
                   
@@ -199,7 +208,13 @@ class _TodoPageState extends State<TodoPage> {
                    BlocProvider.of<TodoBloc>(context).add(AddTodoEvent(todo));
                   Navigator.pop(context);
                 },
-              ),
+              );
+    }
+  },
+)
+
+
+             
             ],
           );
         },

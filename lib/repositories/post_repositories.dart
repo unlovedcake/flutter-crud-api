@@ -7,10 +7,12 @@ class PostRepository {
   //'https://jsonplaceholder.typicode.com';
 
   static Future<List<dynamic>> get(String endpoint) async {
+
     final response = await http.get(Uri.parse('$baseUrl/$endpoint'));
     if (response.statusCode == 200) {
-       log('Posts:'+ json.decode(response.body)['meta']['has_more_page'].toString());
+        log('Posts:'+ json.decode(response.body)['meta']['has_more_page'].toString());
       return json.decode(response.body)['items'];
+     
     } else {
       throw Exception('Failed to load data');
     }
