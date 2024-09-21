@@ -28,7 +28,7 @@ class _PolylineAnimationExampleState extends State<PolylineAnimationExample> {
   }
 
   Future<void> _fetchRoute() async {
-    final apiKey = 'AIzaSyDNQDYD_Gf_z1nyammhkEPwOBeP_fP6VYc'; // Replace with your API key
+    final apiKey = 'xxxxxxxxx'; // Replace with your API key
     final url = 'https://maps.googleapis.com/maps/api/directions/json'
         '?origin=${_userLocation.latitude},${_userLocation.longitude}'
         '&destination=${_driverLocation.latitude},${_driverLocation.longitude}'
